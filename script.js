@@ -1,47 +1,39 @@
-// ==================================================
+// ==========================================
 // RPL ADVENTURE
-// ==================================================
+// ==========================================
+const SCRIPT_URL = 
+    "
 
-// MASUKKAN URL GOOGLE APPS SCRIPT DI SINI
-const API_URL =
-    "PASTE_URL_APPS_SCRIPT_DI_SINI";
-
-
-// ================= GAME SETTINGS =================
+// ================= GAME =================
 
 const GAME_TIME = 90;
 
-const START_LIVES = 3;
+const MAX_LIVES = 3;
 
-const CORRECT_POINT = 10;
+const CORRECT_SCORE = 10;
 
-const WRONG_POINT = 5;
+const WRONG_SCORE = 5;
 
 
-// ================= GAME DATA =================
-
-let score = 0;
-
-let lives = START_LIVES;
-
-let timeLeft = GAME_TIME;
-
-let gameRunning = false;
-
-let timer = null;
+// ================= STATE =================
 
 let username = "";
 
-let collected = [];
+let score = 0;
 
+let lives = MAX_LIVES;
 
-// ================= PLAYER =================
+let timeLeft = GAME_TIME;
+
+let gameActive = false;
+
+let timer = null;
 
 let playerX = 50;
 
 let playerY = 55;
 
-const SPEED = 3;
+let collectedItems = [];
 
 
 // ================= ELEMENT =================
@@ -58,29 +50,23 @@ const gameScreen =
 const gameOverScreen =
     document.getElementById("gameOverScreen");
 
-const leaderboardScreen =
-    document.getElementById("leaderboardScreen");
-
 const quizModal =
     document.getElementById("quizModal");
 
 const player =
     document.getElementById("player");
 
-const gameArea =
-    document.getElementById("gameArea");
+const scoreDisplay =
+    document.getElementById("scoreDisplay");
 
-const scoreText =
-    document.getElementById("score");
+const lifeDisplay =
+    document.getElementById("lifeDisplay");
 
-const livesText =
-    document.getElementById("lives");
+const timeDisplay =
+    document.getElementById("timeDisplay");
 
-const timerText =
-    document.getElementById("timer");
-
-const playerName =
-    document.getElementById("playerName");
+const nameDisplay =
+    document.getElementById("nameDisplay");
 
 
 // ================= SOAL =================
@@ -94,11 +80,11 @@ const questions = {
         title: "HTML",
 
         question:
-            "Apa fungsi utama HTML dalam website?",
+            "Apa fungsi utama HTML?",
 
         answers: [
 
-            "Membuat struktur halaman web",
+            "Membuat struktur halaman website",
 
             "Mengatur database",
 
@@ -146,15 +132,15 @@ const questions = {
         title: "JavaScript",
 
         question:
-            "JavaScript digunakan untuk?",
+            "JavaScript digunakan untuk apa?",
 
         answers: [
 
             "Membuat website menjadi interaktif",
 
-            "Membuat kabel LAN",
+            "Membuat kabel jaringan",
 
-            "Menyimpan listrik",
+            "Mengedit hardware",
 
             "Membersihkan komputer"
 
@@ -204,11 +190,11 @@ const questions = {
 
             "Menyimpan dan mengelola data",
 
-            "Mengubah warna layar",
+            "Mengatur warna monitor",
 
-            "Mengedit video",
+            "Mengedit foto",
 
-            "Membuat kabel"
+            "Membuat kabel LAN"
 
         ],
 
@@ -224,15 +210,15 @@ const questions = {
         title: "Git",
 
         question:
-            "Git digunakan untuk?",
+            "Apa fungsi Git dalam pengembangan software?",
 
         answers: [
 
             "Version control",
 
-            "Mengedit foto",
+            "Mengedit gambar",
 
-            "Membuat komputer",
+            "Membuat hardware",
 
             "Menghapus internet"
 
@@ -245,10 +231,10 @@ const questions = {
 };
 
 
-// ================= START =================
+// ================= START BUTTON =================
 
 document
-    .getElementById("startBtn")
+    .getElementById("startButton")
     .addEventListener(
         "click",
         startGame
@@ -264,83 +250,90 @@ function startGame() {
             .trim();
 
 
-    if (!username) {
+    if (username === "") {
 
         alert(
             "Masukkan username terlebih dahulu!"
         );
 
         return;
+
     }
 
 
+    // RESET
+
     score = 0;
 
-    lives = START_LIVES;
+    lives = MAX_LIVES;
 
     timeLeft = GAME_TIME;
-
-    collected = [];
 
     playerX = 50;
 
     playerY = 55;
 
+    collectedItems = [];
 
-    scoreText.textContent =
+
+    // UPDATE HUD
+
+    scoreDisplay.textContent =
         score;
 
-    livesText.textContent =
+    lifeDisplay.textContent =
         lives;
 
-    timerText.textContent =
+    timeDisplay.textContent =
         timeLeft;
 
-    playerName.textContent =
+    nameDisplay.textContent =
         username;
 
 
-    player.style.left =
-        playerX + "%";
+    // RESET PLAYER
 
-    player.style.top =
-        playerY + "%";
+    updatePlayer();
 
 
-    // tampilkan semua item
+    // TAMPILKAN SEMUA ITEM
 
-    document
-        .querySelectorAll(".item")
-        .forEach(item => {
-
-            item.style.display =
-                "flex";
-
-        });
+    const items =
+        document.querySelectorAll(
+            ".item"
+        );
 
 
-    menuScreen
-        .classList
-        .add("hidden");
+    items.forEach(item => {
 
-    howScreen
-        .classList
-        .add("hidden");
+        item.style.display =
+            "flex";
 
-    gameOverScreen
-        .classList
-        .add("hidden");
-
-    leaderboardScreen
-        .classList
-        .add("hidden");
-
-    gameScreen
-        .classList
-        .remove("hidden");
+    });
 
 
-    gameRunning = true;
+    // SCREEN
+
+    menuScreen.classList.add(
+        "hidden"
+    );
+
+    howScreen.classList.add(
+        "hidden"
+    );
+
+    gameOverScreen.classList.add(
+        "hidden"
+    );
+
+    gameScreen.classList.remove(
+        "hidden"
+    );
+
+
+    // GAME AKTIF
+
+    gameActive = true;
 
 
     startTimer();
@@ -358,19 +351,21 @@ function startTimer() {
     timer =
         setInterval(() => {
 
-            if (!gameRunning)
+            if (!gameActive) {
                 return;
+            }
 
 
             timeLeft--;
 
-            timerText.textContent =
+
+            timeDisplay.textContent =
                 timeLeft;
 
 
             if (timeLeft <= 0) {
 
-                endGame();
+                finishGame();
 
             }
 
@@ -383,125 +378,107 @@ function startTimer() {
 
 document.addEventListener(
     "keydown",
-    event => {
+    function(event) {
 
-        if (!gameRunning)
+        if (!gameActive) {
             return;
+        }
 
 
-        movePlayer(event.key);
+        if (
+            event.key === "ArrowUp" ||
+            event.key === "w" ||
+            event.key === "W"
+        ) {
+
+            movePlayer(
+                0,
+                -3
+            );
+
+        }
+
+
+        if (
+            event.key === "ArrowDown" ||
+            event.key === "s" ||
+            event.key === "S"
+        ) {
+
+            movePlayer(
+                0,
+                3
+            );
+
+        }
+
+
+        if (
+            event.key === "ArrowLeft" ||
+            event.key === "a" ||
+            event.key === "A"
+        ) {
+
+            movePlayer(
+                -3,
+                0
+            );
+
+        }
+
+
+        if (
+            event.key === "ArrowRight" ||
+            event.key === "d" ||
+            event.key === "D"
+        ) {
+
+            movePlayer(
+                3,
+                0
+            );
+
+        }
 
     }
 );
 
 
-// ================= MOVE =================
+// ================= MOVE PLAYER =================
 
-function movePlayer(key) {
+function movePlayer(
+    x,
+    y
+) {
 
-    if (
-        key === "ArrowUp" ||
-        key === "w" ||
-        key === "W"
-    ) {
+    playerX += x;
 
-        playerY -= SPEED;
+    playerY += y;
 
+
+    // BATAS
+
+    if (playerX < 2) {
+        playerX = 2;
     }
 
-
-    if (
-        key === "ArrowDown" ||
-        key === "s" ||
-        key === "S"
-    ) {
-
-        playerY += SPEED;
-
+    if (playerX > 94) {
+        playerX = 94;
     }
 
-
-    if (
-        key === "ArrowLeft" ||
-        key === "a" ||
-        key === "A"
-    ) {
-
-        playerX -= SPEED;
-
+    if (playerY < 12) {
+        playerY = 12;
     }
 
-
-    if (
-        key === "ArrowRight" ||
-        key === "d" ||
-        key === "D"
-    ) {
-
-        playerX += SPEED;
-
+    if (playerY > 90) {
+        playerY = 90;
     }
-
-
-    limitPlayer();
 
 
     updatePlayer();
 
 
     checkCollision();
-
-}
-
-
-// ================= MOBILE =================
-
-document
-    .querySelectorAll(
-        ".mobileControls button"
-    )
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                if (!gameRunning)
-                    return;
-
-
-                movePlayer(
-                    button.dataset.key
-                );
-
-            }
-        );
-
-    });
-
-
-// ================= LIMIT =================
-
-function limitPlayer() {
-
-    playerX =
-        Math.max(
-            2,
-            Math.min(
-                94,
-                playerX
-            )
-        );
-
-
-    playerY =
-        Math.max(
-            10,
-            Math.min(
-                90,
-                playerY
-            )
-        );
 
 }
 
@@ -519,6 +496,57 @@ function updatePlayer() {
 }
 
 
+// ================= MOBILE =================
+
+document
+    .querySelectorAll(
+        ".controls button"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function() {
+
+                if (!gameActive) {
+                    return;
+                }
+
+
+                const direction =
+                    button.dataset.direction;
+
+
+                if (direction === "up") {
+
+                    movePlayer(0, -4);
+
+                }
+
+                if (direction === "down") {
+
+                    movePlayer(0, 4);
+
+                }
+
+                if (direction === "left") {
+
+                    movePlayer(-4, 0);
+
+                }
+
+                if (direction === "right") {
+
+                    movePlayer(4, 0);
+
+                }
+
+            }
+        );
+
+    });
+
+
 // ================= COLLISION =================
 
 function checkCollision() {
@@ -527,46 +555,50 @@ function checkCollision() {
         player.getBoundingClientRect();
 
 
-    document
-        .querySelectorAll(".item")
-        .forEach(item => {
-
-            if (
-                item.style.display ===
-                "none"
-            ) {
-
-                return;
-
-            }
+    const items =
+        document.querySelectorAll(
+            ".item"
+        );
 
 
-            const itemRect =
-                item.getBoundingClientRect();
+    items.forEach(item => {
+
+        if (
+            item.style.display ===
+            "none"
+        ) {
+
+            return;
+
+        }
 
 
-            const collision =
+        const itemRect =
+            item.getBoundingClientRect();
 
-                playerRect.left <
+
+        const hit =
+
+            playerRect.left <
                 itemRect.right &&
 
-                playerRect.right >
+            playerRect.right >
                 itemRect.left &&
 
-                playerRect.top <
+            playerRect.top <
                 itemRect.bottom &&
 
-                playerRect.bottom >
+            playerRect.bottom >
                 itemRect.top;
 
 
-            if (collision) {
+        if (hit) {
 
-                collectItem(item);
+            collectItem(item);
 
-            }
+        }
 
-        });
+    });
 
 }
 
@@ -575,9 +607,12 @@ function checkCollision() {
 
 function collectItem(item) {
 
+    const type =
+        item.dataset.type;
+
+
     if (
-        item.style.display ===
-        "none"
+        collectedItems.includes(type)
     ) {
 
         return;
@@ -585,28 +620,34 @@ function collectItem(item) {
     }
 
 
-    const type =
-        item.dataset.type;
+    collectedItems.push(type);
 
 
     item.style.display =
         "none";
 
 
-    collected.push(type);
-
-
-    showQuiz(type);
+    openQuiz(type);
 
 }
 
 
 // ================= QUIZ =================
 
-function showQuiz(type) {
+function openQuiz(type) {
 
     const data =
         questions[type];
+
+
+    if (!data) {
+
+        return;
+
+    }
+
+
+    gameActive = false;
 
 
     document
@@ -622,22 +663,22 @@ function showQuiz(type) {
 
 
     document
-        .getElementById("question")
+        .getElementById("questionText")
         .textContent =
         data.question;
 
 
-    const answers =
+    const container =
         document.getElementById(
-            "answers"
+            "answerContainer"
         );
 
 
-    answers.innerHTML = "";
+    container.innerHTML = "";
 
 
     data.answers.forEach(
-        (answer, index) => {
+        function(answer, index) {
 
             const button =
                 document.createElement(
@@ -646,7 +687,7 @@ function showQuiz(type) {
 
 
             button.className =
-                "answer";
+                "answerButton";
 
 
             button.textContent =
@@ -655,9 +696,9 @@ function showQuiz(type) {
 
             button.addEventListener(
                 "click",
-                () => {
+                function() {
 
-                    answerQuiz(
+                    checkAnswer(
                         index,
                         data.correct
                     );
@@ -666,7 +707,7 @@ function showQuiz(type) {
             );
 
 
-            answers.appendChild(
+            container.appendChild(
                 button
             );
 
@@ -674,35 +715,30 @@ function showQuiz(type) {
     );
 
 
-    gameRunning = false;
-
-
-    quizModal
-        .classList
-        .remove("hidden");
+    quizModal.classList.remove(
+        "hidden"
+    );
 
 }
 
 
 // ================= ANSWER =================
 
-function answerQuiz(
+function checkAnswer(
     selected,
     correct
 ) {
 
-    if (
-        selected === correct
-    ) {
+    if (selected === correct) {
 
-        score += CORRECT_POINT;
+        score += CORRECT_SCORE;
 
-        scoreText.textContent =
+        scoreDisplay.textContent =
             score;
 
 
         alert(
-            "✅ Benar! +10 poin"
+            "✅ Jawaban benar! +10 poin"
         );
 
     }
@@ -712,32 +748,30 @@ function answerQuiz(
         score =
             Math.max(
                 0,
-                score - WRONG_POINT
+                score - WRONG_SCORE
             );
 
 
         lives--;
 
 
-        scoreText.textContent =
+        scoreDisplay.textContent =
             score;
 
-        livesText.textContent =
+        lifeDisplay.textContent =
             lives;
 
 
         alert(
-            "❌ Salah! -5 poin"
+            "❌ Jawaban salah! -5 poin"
         );
 
 
         if (lives <= 0) {
 
-            quizModal
-                .classList
-                .add("hidden");
+            closeQuiz();
 
-            endGame();
+            finishGame();
 
             return;
 
@@ -746,64 +780,75 @@ function answerQuiz(
     }
 
 
-    quizModal
-        .classList
-        .add("hidden");
+    closeQuiz();
 
 
     const totalItems =
-        document
-            .querySelectorAll(".item")
-            .length;
+        document.querySelectorAll(
+            ".item"
+        ).length;
 
 
     if (
-        collected.length >=
+        collectedItems.length >=
         totalItems
     ) {
 
         alert(
-            "🎉 Semua materi RPL ditemukan!"
+            "🎉 Semua materi RPL berhasil ditemukan!"
         );
 
-        endGame();
+        finishGame();
 
         return;
 
     }
 
 
-    gameRunning = true;
+    gameActive = true;
 
 }
 
 
-// ================= END GAME =================
+// ================= CLOSE QUIZ =================
 
-async function endGame() {
+function closeQuiz() {
 
-    if (!gameRunning)
-        return;
+    quizModal.classList.add(
+        "hidden"
+    );
+
+}
 
 
-    gameRunning = false;
+// ================= FINISH =================
+
+function finishGame() {
+
+    if (!gameActive) {
+
+        // Tetap boleh selesai jika dipanggil
+        // setelah quiz
+    }
+
+
+    gameActive = false;
+
 
     clearInterval(timer);
 
 
-    quizModal
-        .classList
-        .add("hidden");
+    closeQuiz();
 
 
-    gameScreen
-        .classList
-        .add("hidden");
+    gameScreen.classList.add(
+        "hidden"
+    );
 
 
-    gameOverScreen
-        .classList
-        .remove("hidden");
+    gameOverScreen.classList.remove(
+        "hidden"
+    );
 
 
     document
@@ -818,324 +863,29 @@ async function endGame() {
     if (score >= 50) {
 
         message =
-            "🔥 Luar biasa! Dasar RPL kamu sangat bagus!";
+            "🔥 Luar biasa! Kamu menguasai dasar RPL!";
 
     }
 
     else if (score >= 30) {
 
         message =
-            "⭐ Bagus! Terus tingkatkan kemampuan RPL kamu!";
+            "⭐ Bagus! Pengetahuan RPL kamu sudah cukup baik.";
 
     }
 
     else {
 
         message =
-            "💪 Jangan menyerah! Coba lagi dan pelajari materi RPL.";
+            "💪 Tetap semangat! Pelajari RPL dan coba lagi.";
 
     }
 
 
     document
-        .getElementById("finalMessage")
+        .getElementById("resultText")
         .textContent =
         message;
-
-
-    // SIMPAN KE GOOGLE SHEETS
-
-    await saveScore();
-
-}
-
-
-// ================= SAVE SCORE =================
-
-async function saveScore() {
-
-    if (
-        API_URL.includes(
-            "PASTE_URL"
-        )
-    ) {
-
-        console.log(
-            "Google Sheets belum dihubungkan."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        const params =
-            new URLSearchParams({
-
-                action:
-                    "saveScore",
-
-                username:
-                    username,
-
-                score:
-                    score,
-
-                level:
-                    1
-
-            });
-
-
-        await fetch(
-            API_URL +
-            "?" +
-            params.toString()
-        );
-
-
-        console.log(
-            "Score berhasil disimpan."
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Gagal menyimpan score:",
-            error
-        );
-
-    }
-
-}
-
-
-// ================= LEADERBOARD =================
-
-document
-    .getElementById(
-        "leaderboardBtn"
-    )
-    .addEventListener(
-        "click",
-        showLeaderboard
-    );
-
-
-async function showLeaderboard() {
-
-    menuScreen
-        .classList
-        .add("hidden");
-
-    gameOverScreen
-        .classList
-        .add("hidden");
-
-    leaderboardScreen
-        .classList
-        .remove("hidden");
-
-
-    const list =
-        document.getElementById(
-            "leaderboardList"
-        );
-
-
-    list.innerHTML =
-        `<div class="loading">
-            ⏳ Memuat leaderboard...
-        </div>`;
-
-
-    if (
-        API_URL.includes(
-            "PASTE_URL"
-        )
-    ) {
-
-        list.innerHTML =
-            `<div class="loading">
-                ⚠️ Google Sheets belum dihubungkan.
-            </div>`;
-
-        return;
-
-    }
-
-
-    try {
-
-        const params =
-            new URLSearchParams({
-
-                action:
-                    "leaderboard"
-
-            });
-
-
-        const response =
-            await fetch(
-                API_URL +
-                "?" +
-                params.toString()
-            );
-
-
-        const result =
-            await response.json();
-
-
-        if (!result.success) {
-
-            throw new Error(
-                result.message
-            );
-
-        }
-
-
-        renderLeaderboard(
-            result.data
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-
-        list.innerHTML =
-            `<div class="loading">
-                ❌ Gagal mengambil leaderboard.
-                <br><br>
-                Pastikan URL Apps Script benar.
-            </div>`;
-
-    }
-
-}
-
-
-// ================= RENDER LEADERBOARD =================
-
-function renderLeaderboard(data) {
-
-    const list =
-        document.getElementById(
-            "leaderboardList"
-        );
-
-
-    if (
-        !data ||
-        data.length === 0
-    ) {
-
-        list.innerHTML =
-            `<div class="loading">
-                🏆 Belum ada skor.
-            </div>`;
-
-        return;
-
-    }
-
-
-    list.innerHTML =
-        data.map(
-            (player, index) => {
-
-                let rank;
-
-
-                if (index === 0)
-                    rank = "🥇";
-
-                else if (index === 1)
-                    rank = "🥈";
-
-                else if (index === 2)
-                    rank = "🥉";
-
-                else
-                    rank =
-                        "#" +
-                        (index + 1);
-
-
-                return `
-
-                    <div class="leaderRow">
-
-                        <div class="rank">
-                            ${rank}
-                        </div>
-
-                        <div class="playerInfo">
-
-                            <strong>
-                                ${escapeHTML(
-                                    player.username
-                                )}
-                            </strong>
-
-                            <small>
-                                RPL Adventure
-                            </small>
-
-                        </div>
-
-                        <div class="leaderScore">
-
-                            ⭐ ${player.score}
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        ).join("");
-
-}
-
-
-// ================= ESCAPE HTML =================
-
-function escapeHTML(value) {
-
-    return String(
-        value ?? ""
-    )
-    .replaceAll(
-        "&",
-        "&amp;"
-    )
-    .replaceAll(
-        "<",
-        "&lt;"
-    )
-    .replaceAll(
-        ">",
-        "&gt;"
-    )
-    .replaceAll(
-        '"',
-        "&quot;"
-    )
-    .replaceAll(
-        "'",
-        "&#039;"
-    );
 
 }
 
@@ -1143,21 +893,21 @@ function escapeHTML(value) {
 // ================= PLAY AGAIN =================
 
 document
-    .getElementById(
-        "playAgainBtn"
-    )
+    .getElementById("againButton")
     .addEventListener(
         "click",
-        startGame
+        function() {
+
+            startGame();
+
+        }
     );
 
 
 // ================= HOME =================
 
 document
-    .getElementById(
-        "homeBtn"
-    )
+    .getElementById("homeButton")
     .addEventListener(
         "click",
         goHome
@@ -1166,30 +916,28 @@ document
 
 function goHome() {
 
-    gameRunning = false;
+    gameActive = false;
 
     clearInterval(timer);
 
+    closeQuiz();
 
-    gameOverScreen
-        .classList
-        .add("hidden");
 
-    leaderboardScreen
-        .classList
-        .add("hidden");
+    gameScreen.classList.add(
+        "hidden"
+    );
 
-    gameScreen
-        .classList
-        .add("hidden");
+    gameOverScreen.classList.add(
+        "hidden"
+    );
 
-    howScreen
-        .classList
-        .add("hidden");
+    howScreen.classList.add(
+        "hidden"
+    );
 
-    menuScreen
-        .classList
-        .remove("hidden");
+    menuScreen.classList.remove(
+        "hidden"
+    );
 
 }
 
@@ -1197,37 +945,25 @@ function goHome() {
 // ================= HOW TO PLAY =================
 
 document
-    .getElementById("howBtn")
+    .getElementById("howButton")
     .addEventListener(
         "click",
-        () => {
+        function() {
 
-            menuScreen
-                .classList
-                .add("hidden");
+            menuScreen.classList.add(
+                "hidden"
+            );
 
-            howScreen
-                .classList
-                .remove("hidden");
+            howScreen.classList.remove(
+                "hidden"
+            );
 
         }
     );
 
 
 document
-    .getElementById("backHowBtn")
-    .addEventListener(
-        "click",
-        goHome
-    );
-
-
-// ================= BACK LEADERBOARD =================
-
-document
-    .getElementById(
-        "backLeaderboardBtn"
-    )
+    .getElementById("backButton")
     .addEventListener(
         "click",
         goHome
@@ -1237,20 +973,22 @@ document
 // ================= QUIT =================
 
 document
-    .getElementById("quitBtn")
+    .getElementById("quitButton")
     .addEventListener(
         "click",
-        () => {
+        function() {
 
-            if (
+            const confirmQuit =
                 confirm(
-                    "Yakin ingin keluar dari game?"
-                )
-            ) {
+                    "Yakin ingin keluar?"
+                );
 
-                endGame();
+
+            if (confirmQuit) {
+
+                finishGame();
 
             }
 
         }
-    );
+    ); 
