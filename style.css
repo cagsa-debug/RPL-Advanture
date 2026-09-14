@@ -569,3 +569,61 @@ button:active {
     }
 
 }
+
+/* =========================
+   LEADERBOARD
+========================= */
+
+.leaderboardCard {
+    max-width: 520px;
+}
+
+#leaderboardList {
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.leaderboardRow {
+    display: grid;
+    grid-template-columns: 45px 1fr 100px;
+    align-items: center;
+    gap: 10px;
+
+    background: #111831;
+
+    padding: 14px;
+
+    margin: 8px 0;
+
+    border-radius: 12px;
+
+    text-align: left;
+}
+
+.rank {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.playerName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.playerScore {
+    text-align: right;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+
+    .leaderboardRow {
+        grid-template-columns:
+            35px 1fr 80px;
+
+        font-size: 13px;
+    }
+
+}
