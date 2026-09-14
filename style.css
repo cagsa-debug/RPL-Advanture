@@ -1,0 +1,585 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    color: white;
+    background:
+        radial-gradient(circle at top, #263f88, #080d22 65%);
+    overflow: hidden;
+}
+
+
+/* ================= UMUM ================= */
+
+.hidden {
+    display: none !important;
+}
+
+.screen {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+
+/* ================= CARD ================= */
+
+.card {
+    width: min(450px, 100%);
+
+    padding: 35px 25px;
+
+    background: rgba(18, 25, 58, .96);
+
+    border: 1px solid rgba(255,255,255,.15);
+
+    border-radius: 25px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.5);
+}
+
+.logo {
+    font-size: 70px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 30px;
+    letter-spacing: 2px;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.subtitle {
+    color: #bdc7e8;
+    line-height: 1.5;
+    margin: 12px 0 25px;
+}
+
+
+/* ================= INPUT ================= */
+
+input {
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+    outline: none;
+
+    border-radius: 12px;
+
+    margin-bottom: 12px;
+
+    font-size: 16px;
+}
+
+
+/* ================= BUTTON ================= */
+
+button {
+    border: none;
+
+    background: #5d62f0;
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    border-radius: 12px;
+
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+}
+
+button:active {
+    transform: scale(.96);
+}
+
+.card > button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.secondary {
+    background: #293158;
+}
+
+
+/* ================= INSTRUCTIONS ================= */
+
+.instructions {
+    text-align: left;
+
+    background: #111938;
+
+    padding: 15px;
+
+    border-radius: 15px;
+
+    margin-bottom: 10px;
+}
+
+.instructions p {
+    padding: 8px 0;
+
+    color: #dce3ff;
+
+    line-height: 1.4;
+}
+
+
+/* ================= GAME ================= */
+
+#gameScreen {
+    width: 100vw;
+    height: 100vh;
+}
+
+
+/* ================= HUD ================= */
+
+.hud {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 65px;
+
+    z-index: 50;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 10px;
+
+    background: rgba(7,11,30,.96);
+
+    border-bottom: 2px solid #313b6d;
+}
+
+.hud div {
+    background: #1b2449;
+
+    padding: 9px 13px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+}
+
+
+/* ================= GAME AREA ================= */
+
+#gameArea {
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background-color: #101735;
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 40px 40px;
+}
+
+.gameTitle {
+    position: absolute;
+
+    top: 82px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 20;
+
+    padding: 9px 16px;
+
+    border-radius: 20px;
+
+    background: rgba(17,25,55,.9);
+
+    font-size: 13px;
+}
+
+
+/* ================= PLAYER ================= */
+
+#player {
+    position: absolute;
+
+    left: 50%;
+    top: 55%;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: 40px;
+
+    z-index: 30;
+
+    transition:
+        left .07s linear,
+        top .07s linear;
+
+    filter:
+        drop-shadow(
+            0 6px 5px rgba(0,0,0,.6)
+        );
+}
+
+
+/* ================= ITEM ================= */
+
+.item {
+    position: absolute;
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: 32px;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.4);
+
+    animation: floating 1.4s infinite alternate;
+
+    z-index: 10;
+}
+
+.item span {
+    font-size: 10px;
+
+    margin-top: 3px;
+
+    font-weight: bold;
+}
+
+@keyframes floating {
+
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-8px);
+    }
+
+}
+
+
+/* POSISI ITEM */
+
+.html {
+    left: 12%;
+    top: 28%;
+    background: #e44d26;
+}
+
+.css {
+    left: 40%;
+    top: 22%;
+    background: #2965f1;
+}
+
+.javascript {
+    right: 12%;
+    top: 30%;
+    background: #c9aa00;
+}
+
+.python {
+    left: 15%;
+    bottom: 22%;
+    background: #3776ab;
+}
+
+.database {
+    right: 38%;
+    bottom: 18%;
+    background: #23734a;
+}
+
+.git {
+    right: 10%;
+    bottom: 25%;
+    background: #e44c30;
+}
+
+
+/* ================= MOBILE CONTROL ================= */
+
+.mobileControls {
+    position: fixed;
+
+    bottom: 15px;
+    left: 15px;
+
+    z-index: 60;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 52px);
+
+    gap: 5px;
+}
+
+.mobileControls button {
+    width: 52px;
+    height: 52px;
+
+    background: rgba(37,46,88,.9);
+
+    font-size: 20px;
+}
+
+
+/* ================= QUIT ================= */
+
+.quit {
+    position: fixed;
+
+    top: 78px;
+    right: 15px;
+
+    width: 45px;
+    height: 45px;
+
+    z-index: 60;
+
+    background: #a83246;
+
+    font-size: 18px;
+}
+
+
+/* ================= QUIZ ================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    background: rgba(0,0,0,.78);
+}
+
+.quizBox {
+    width: min(500px,100%);
+
+    background: #171f45;
+
+    padding: 30px;
+
+    border-radius: 22px;
+
+    text-align: center;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.6);
+}
+
+.quizIcon {
+    font-size: 55px;
+}
+
+#question {
+    margin: 20px 0;
+
+    line-height: 1.5;
+
+    font-size: 17px;
+}
+
+.answer {
+    width: 100%;
+
+    padding: 13px;
+
+    margin: 5px 0;
+
+    background: #29335f;
+
+    text-align: left;
+
+    font-size: 14px;
+}
+
+.answer:hover {
+    background: #414d83;
+}
+
+
+/* ================= GAME OVER ================= */
+
+.finalScore {
+    margin: 25px 0;
+
+    font-size: 48px;
+
+    font-weight: bold;
+}
+
+
+/* ================= LEADERBOARD ================= */
+
+.leaderboardCard {
+    max-width: 550px;
+}
+
+#leaderboardList {
+    margin: 20px 0;
+
+    max-height: 420px;
+
+    overflow-y: auto;
+}
+
+.leaderRow {
+    display: grid;
+
+    grid-template-columns:
+        50px 1fr 80px;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px;
+
+    margin-bottom: 7px;
+
+    background: #202950;
+
+    border-radius: 12px;
+
+    text-align: left;
+}
+
+.rank {
+    font-size: 22px;
+    text-align: center;
+}
+
+.playerInfo strong {
+    display: block;
+}
+
+.playerInfo small {
+    color: #9fa9cc;
+}
+
+.leaderScore {
+    text-align: right;
+
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+.loading {
+    padding: 20px;
+
+    color: #b9c3e4;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 600px) {
+
+    h1 {
+        font-size: 25px;
+    }
+
+    .hud {
+        height: 60px;
+        gap: 4px;
+    }
+
+    .hud div {
+        padding: 7px 8px;
+        font-size: 11px;
+    }
+
+    .item {
+        width: 58px;
+        height: 58px;
+        font-size: 27px;
+    }
+
+    .item span {
+        font-size: 8px;
+    }
+
+    .gameTitle {
+        top: 72px;
+        font-size: 10px;
+    }
+
+    .quizBox {
+        padding: 22px;
+    }
+
+}
