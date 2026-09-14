@@ -1,10 +1,20 @@
 // ==========================================
 // RPL ADVENTURE
+// GOOGLE SHEETS + LEADERBOARD
 // ==========================================
-const SCRIPT_URL = 
-    "https://script.google.com/macros/s/AKfycbzjMBjCm1-70HeeXXTt_M_oHmdHhx7_lQRnw14ZfvCQxkR__LZJDqSnwlBqRINUvopu0g/exec";
 
-// ================= GAME =================
+
+// ==========================================
+// MASUKKAN URL GOOGLE APPS SCRIPT DI SINI
+// ==========================================
+
+const SCRIPT_URL =
+    "MASUKKAN_URL_APPS_SCRIPT";
+
+
+// ==========================================
+// PENGATURAN GAME
+// ==========================================
 
 const GAME_TIME = 90;
 
@@ -15,7 +25,9 @@ const CORRECT_SCORE = 10;
 const WRONG_SCORE = 5;
 
 
-// ================= STATE =================
+// ==========================================
+// VARIABLE
+// ==========================================
 
 let username = "";
 
@@ -36,7 +48,9 @@ let playerY = 55;
 let collectedItems = [];
 
 
-// ================= ELEMENT =================
+// ==========================================
+// ELEMENT
+// ==========================================
 
 const menuScreen =
     document.getElementById("menuScreen");
@@ -46,6 +60,9 @@ const howScreen =
 
 const gameScreen =
     document.getElementById("gameScreen");
+
+const leaderboardScreen =
+    document.getElementById("leaderboardScreen");
 
 const gameOverScreen =
     document.getElementById("gameOverScreen");
@@ -69,7 +86,9 @@ const nameDisplay =
     document.getElementById("nameDisplay");
 
 
-// ================= SOAL =================
+// ==========================================
+// SOAL
+// ==========================================
 
 const questions = {
 
@@ -231,14 +250,13 @@ const questions = {
 };
 
 
-// ================= START BUTTON =================
+// ==========================================
+// MULAI GAME
+// ==========================================
 
 document
     .getElementById("startButton")
-    .addEventListener(
-        "click",
-        startGame
-    );
+    .addEventListener("click", startGame);
 
 
 function startGame() {
@@ -250,7 +268,7 @@ function startGame() {
             .trim();
 
 
-    if (username === "") {
+    if (!username) {
 
         alert(
             "Masukkan username terlebih dahulu!"
@@ -260,8 +278,6 @@ function startGame() {
 
     }
 
-
-    // RESET
 
     score = 0;
 
@@ -276,62 +292,37 @@ function startGame() {
     collectedItems = [];
 
 
-    // UPDATE HUD
+    scoreDisplay.textContent = score;
 
-    scoreDisplay.textContent =
-        score;
+    lifeDisplay.textContent = lives;
 
-    lifeDisplay.textContent =
-        lives;
+    timeDisplay.textContent = timeLeft;
 
-    timeDisplay.textContent =
-        timeLeft;
+    nameDisplay.textContent = username;
 
-    nameDisplay.textContent =
-        username;
-
-
-    // RESET PLAYER
 
     updatePlayer();
 
 
-    // TAMPILKAN SEMUA ITEM
+    document
+        .querySelectorAll(".item")
+        .forEach(item => {
 
-    const items =
-        document.querySelectorAll(
-            ".item"
-        );
+            item.style.display = "flex";
 
-
-    items.forEach(item => {
-
-        item.style.display =
-            "flex";
-
-    });
+        });
 
 
-    // SCREEN
+    menuScreen.classList.add("hidden");
 
-    menuScreen.classList.add(
-        "hidden"
-    );
+    howScreen.classList.add("hidden");
 
-    howScreen.classList.add(
-        "hidden"
-    );
+    leaderboardScreen.classList.add("hidden");
 
-    gameOverScreen.classList.add(
-        "hidden"
-    );
+    gameOverScreen.classList.add("hidden");
 
-    gameScreen.classList.remove(
-        "hidden"
-    );
+    gameScreen.classList.remove("hidden");
 
-
-    // GAME AKTIF
 
     gameActive = true;
 
@@ -341,48 +332,47 @@ function startGame() {
 }
 
 
-// ================= TIMER =================
+// ==========================================
+// TIMER
+// ==========================================
 
 function startTimer() {
 
     clearInterval(timer);
 
 
-    timer =
-        setInterval(() => {
+    timer = setInterval(() => {
 
-            if (!gameActive) {
-                return;
-            }
+        if (!gameActive) return;
 
 
-            timeLeft--;
+        timeLeft--;
 
 
-            timeDisplay.textContent =
-                timeLeft;
+        timeDisplay.textContent =
+            timeLeft;
 
 
-            if (timeLeft <= 0) {
+        if (timeLeft <= 0) {
 
-                finishGame();
+            finishGame("Waktu habis");
 
-            }
+        }
 
-        }, 1000);
+    }, 1000);
 
 }
 
 
-// ================= KEYBOARD =================
+// ==========================================
+// KEYBOARD
+// ==========================================
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    event => {
 
-        if (!gameActive) {
-            return;
-        }
+        if (!gameActive) return;
 
 
         if (
@@ -391,10 +381,9 @@ document.addEventListener(
             event.key === "W"
         ) {
 
-            movePlayer(
-                0,
-                -3
-            );
+            event.preventDefault();
+
+            movePlayer(0, -3);
 
         }
 
@@ -405,10 +394,9 @@ document.addEventListener(
             event.key === "S"
         ) {
 
-            movePlayer(
-                0,
-                3
-            );
+            event.preventDefault();
+
+            movePlayer(0, 3);
 
         }
 
@@ -419,10 +407,9 @@ document.addEventListener(
             event.key === "A"
         ) {
 
-            movePlayer(
-                -3,
-                0
-            );
+            event.preventDefault();
+
+            movePlayer(-3, 0);
 
         }
 
@@ -433,10 +420,9 @@ document.addEventListener(
             event.key === "D"
         ) {
 
-            movePlayer(
-                3,
-                0
-            );
+            event.preventDefault();
+
+            movePlayer(3, 0);
 
         }
 
@@ -444,46 +430,37 @@ document.addEventListener(
 );
 
 
-// ================= MOVE PLAYER =================
+// ==========================================
+// GERAK PLAYER
+// ==========================================
 
-function movePlayer(
-    x,
-    y
-) {
+function movePlayer(x, y) {
 
     playerX += x;
 
     playerY += y;
 
 
-    // BATAS
+    playerX =
+        Math.max(
+            2,
+            Math.min(94, playerX)
+        );
 
-    if (playerX < 2) {
-        playerX = 2;
-    }
 
-    if (playerX > 94) {
-        playerX = 94;
-    }
-
-    if (playerY < 12) {
-        playerY = 12;
-    }
-
-    if (playerY > 90) {
-        playerY = 90;
-    }
+    playerY =
+        Math.max(
+            12,
+            Math.min(90, playerY)
+        );
 
 
     updatePlayer();
-
 
     checkCollision();
 
 }
 
-
-// ================= UPDATE PLAYER =================
 
 function updatePlayer() {
 
@@ -496,7 +473,9 @@ function updatePlayer() {
 }
 
 
-// ================= MOBILE =================
+// ==========================================
+// MOBILE CONTROL
+// ==========================================
 
 document
     .querySelectorAll(
@@ -506,40 +485,30 @@ document
 
         button.addEventListener(
             "click",
-            function() {
+            () => {
 
-                if (!gameActive) {
+                if (!gameActive)
                     return;
-                }
 
 
                 const direction =
                     button.dataset.direction;
 
 
-                if (direction === "up") {
-
+                if (direction === "up")
                     movePlayer(0, -4);
 
-                }
 
-                if (direction === "down") {
-
+                if (direction === "down")
                     movePlayer(0, 4);
 
-                }
 
-                if (direction === "left") {
-
+                if (direction === "left")
                     movePlayer(-4, 0);
 
-                }
 
-                if (direction === "right") {
-
+                if (direction === "right")
                     movePlayer(4, 0);
-
-                }
 
             }
         );
@@ -547,7 +516,9 @@ document
     });
 
 
-// ================= COLLISION =================
+// ==========================================
+// COLLISION
+// ==========================================
 
 function checkCollision() {
 
@@ -555,55 +526,48 @@ function checkCollision() {
         player.getBoundingClientRect();
 
 
-    const items =
-        document.querySelectorAll(
-            ".item"
-        );
+    document
+        .querySelectorAll(".item")
+        .forEach(item => {
+
+            if (
+                item.style.display === "none"
+            ) return;
 
 
-    items.forEach(item => {
-
-        if (
-            item.style.display ===
-            "none"
-        ) {
-
-            return;
-
-        }
+            const itemRect =
+                item.getBoundingClientRect();
 
 
-        const itemRect =
-            item.getBoundingClientRect();
+            const hit =
 
-
-        const hit =
-
-            playerRect.left <
+                playerRect.left <
                 itemRect.right &&
 
-            playerRect.right >
+                playerRect.right >
                 itemRect.left &&
 
-            playerRect.top <
+                playerRect.top <
                 itemRect.bottom &&
 
-            playerRect.bottom >
+                playerRect.bottom >
                 itemRect.top;
 
 
-        if (hit) {
+            if (hit) {
 
-            collectItem(item);
+                collectItem(item);
 
-        }
+            }
 
-    });
+        });
 
 }
 
 
-// ================= COLLECT =================
+// ==========================================
+// AMBIL ITEM
+// ==========================================
 
 function collectItem(item) {
 
@@ -613,18 +577,13 @@ function collectItem(item) {
 
     if (
         collectedItems.includes(type)
-    ) {
-
-        return;
-
-    }
+    ) return;
 
 
     collectedItems.push(type);
 
 
-    item.style.display =
-        "none";
+    item.style.display = "none";
 
 
     openQuiz(type);
@@ -632,7 +591,9 @@ function collectItem(item) {
 }
 
 
-// ================= QUIZ =================
+// ==========================================
+// QUIZ
+// ==========================================
 
 function openQuiz(type) {
 
@@ -640,11 +601,7 @@ function openQuiz(type) {
         questions[type];
 
 
-    if (!data) {
-
-        return;
-
-    }
+    if (!data) return;
 
 
     gameActive = false;
@@ -652,20 +609,17 @@ function openQuiz(type) {
 
     document
         .getElementById("quizIcon")
-        .textContent =
-        data.icon;
+        .textContent = data.icon;
 
 
     document
         .getElementById("quizTitle")
-        .textContent =
-        data.title;
+        .textContent = data.title;
 
 
     document
         .getElementById("questionText")
-        .textContent =
-        data.question;
+        .textContent = data.question;
 
 
     const container =
@@ -678,7 +632,7 @@ function openQuiz(type) {
 
 
     data.answers.forEach(
-        function(answer, index) {
+        (answer, index) => {
 
             const button =
                 document.createElement(
@@ -696,7 +650,7 @@ function openQuiz(type) {
 
             button.addEventListener(
                 "click",
-                function() {
+                () => {
 
                     checkAnswer(
                         index,
@@ -707,9 +661,7 @@ function openQuiz(type) {
             );
 
 
-            container.appendChild(
-                button
-            );
+            container.appendChild(button);
 
         }
     );
@@ -722,7 +674,9 @@ function openQuiz(type) {
 }
 
 
-// ================= ANSWER =================
+// ==========================================
+// JAWAB SOAL
+// ==========================================
 
 function checkAnswer(
     selected,
@@ -733,17 +687,12 @@ function checkAnswer(
 
         score += CORRECT_SCORE;
 
-        scoreDisplay.textContent =
-            score;
-
 
         alert(
             "✅ Jawaban benar! +10 poin"
         );
 
-    }
-
-    else {
+    } else {
 
         score =
             Math.max(
@@ -755,32 +704,33 @@ function checkAnswer(
         lives--;
 
 
-        scoreDisplay.textContent =
-            score;
-
-        lifeDisplay.textContent =
-            lives;
-
-
         alert(
             "❌ Jawaban salah! -5 poin"
         );
 
-
-        if (lives <= 0) {
-
-            closeQuiz();
-
-            finishGame();
-
-            return;
-
-        }
-
     }
 
 
+    scoreDisplay.textContent =
+        score;
+
+
+    lifeDisplay.textContent =
+        lives;
+
+
     closeQuiz();
+
+
+    if (lives <= 0) {
+
+        finishGame(
+            "Nyawa habis"
+        );
+
+        return;
+
+    }
 
 
     const totalItems =
@@ -794,11 +744,9 @@ function checkAnswer(
         totalItems
     ) {
 
-        alert(
-            "🎉 Semua materi RPL berhasil ditemukan!"
+        finishGame(
+            "Semua materi berhasil ditemukan"
         );
-
-        finishGame();
 
         return;
 
@@ -810,7 +758,9 @@ function checkAnswer(
 }
 
 
-// ================= CLOSE QUIZ =================
+// ==========================================
+// CLOSE QUIZ
+// ==========================================
 
 function closeQuiz() {
 
@@ -821,93 +771,363 @@ function closeQuiz() {
 }
 
 
-// ================= FINISH =================
+// ==========================================
+// SELESAI GAME
+// ==========================================
 
-function finishGame() {
+function finishGame(reason) {
 
-    if (!gameActive) {
+    if (!gameScreen.classList.contains("hidden")) {
 
-        // Tetap boleh selesai jika dipanggil
-        // setelah quiz
-    }
+        gameActive = false;
 
+        clearInterval(timer);
 
-    gameActive = false;
-
-
-    clearInterval(timer);
+        closeQuiz();
 
 
-    closeQuiz();
+        gameScreen.classList.add(
+            "hidden"
+        );
 
 
-    gameScreen.classList.add(
-        "hidden"
-    );
+        gameOverScreen.classList.remove(
+            "hidden"
+        );
 
 
-    gameOverScreen.classList.remove(
-        "hidden"
-    );
+        document
+            .getElementById("finalScore")
+            .textContent = score;
 
 
-    document
-        .getElementById("finalScore")
-        .textContent =
-        score;
+        document
+            .getElementById("resultText")
+            .textContent =
+                reason;
 
 
-    let message;
-
-
-    if (score >= 50) {
-
-        message =
-            "🔥 Luar biasa! Kamu menguasai dasar RPL!";
+        saveGame();
 
     }
-
-    else if (score >= 30) {
-
-        message =
-            "⭐ Bagus! Pengetahuan RPL kamu sudah cukup baik.";
-
-    }
-
-    else {
-
-        message =
-            "💪 Tetap semangat! Pelajari RPL dan coba lagi.";
-
-    }
-
-
-    document
-        .getElementById("resultText")
-        .textContent =
-        message;
 
 }
 
 
-// ================= PLAY AGAIN =================
+// ==========================================
+// SIMPAN KE GOOGLE SHEETS
+// ==========================================
+
+function saveGame() {
+
+    if (
+        !SCRIPT_URL ||
+        SCRIPT_URL.includes(
+            "MASUKKAN_URL"
+        )
+    ) {
+
+        console.warn(
+            "URL Google Apps Script belum diisi."
+        );
+
+        return;
+
+    }
+
+
+    const params =
+        new URLSearchParams({
+
+            action: "save",
+
+            username: username,
+
+            score: score,
+
+            materi: collectedItems.length,
+
+            status: "Selesai"
+
+        });
+
+
+    fetch(
+        SCRIPT_URL +
+        "?" +
+        params.toString()
+    )
+
+    .then(response =>
+        response.json()
+    )
+
+    .then(data => {
+
+        console.log(
+            "Google Sheets:",
+            data
+        );
+
+    })
+
+    .catch(error => {
+
+        console.error(
+            "Gagal menyimpan:",
+            error
+        );
+
+    });
+
+}
+
+
+// ==========================================
+// LEADERBOARD
+// ==========================================
+
+document
+    .getElementById(
+        "leaderboardButton"
+    )
+    .addEventListener(
+        "click",
+        showLeaderboard
+    );
+
+
+document
+    .getElementById(
+        "resultLeaderboard"
+    )
+    .addEventListener(
+        "click",
+        showLeaderboard
+    );
+
+
+document
+    .getElementById(
+        "refreshLeaderboard"
+    )
+    .addEventListener(
+        "click",
+        loadLeaderboard
+    );
+
+
+function showLeaderboard() {
+
+    menuScreen.classList.add(
+        "hidden"
+    );
+
+    gameOverScreen.classList.add(
+        "hidden"
+    );
+
+    leaderboardScreen.classList.remove(
+        "hidden"
+    );
+
+
+    loadLeaderboard();
+
+}
+
+
+// ==========================================
+// AMBIL DATA LEADERBOARD
+// ==========================================
+
+function loadLeaderboard() {
+
+    const list =
+        document.getElementById(
+            "leaderboardList"
+        );
+
+
+    list.innerHTML =
+        "<p>⏳ Memuat leaderboard...</p>";
+
+
+    if (
+        !SCRIPT_URL ||
+        SCRIPT_URL.includes(
+            "MASUKKAN_URL"
+        )
+    ) {
+
+        list.innerHTML =
+            "<p>⚠️ URL Google Apps Script belum diisi.</p>";
+
+        return;
+
+    }
+
+
+    fetch(
+        SCRIPT_URL +
+        "?action=leaderboard"
+    )
+
+    .then(response =>
+        response.json()
+    )
+
+    .then(result => {
+
+        if (
+            !result.success
+        ) {
+
+            list.innerHTML =
+                "<p>Gagal mengambil data.</p>";
+
+            return;
+
+        }
+
+
+        if (
+            result.data.length === 0
+        ) {
+
+            list.innerHTML =
+                "<p>Belum ada pemain.</p>";
+
+            return;
+
+        }
+
+
+        list.innerHTML = "";
+
+
+        result.data.forEach(
+            (player, index) => {
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                row.className =
+                    "leaderboardRow";
+
+
+                row.innerHTML = `
+
+                    <span class="rank">
+                        ${index + 1}
+                    </span>
+
+                    <span class="playerName">
+                        ${escapeHTML(
+                            player.username
+                        )}
+                    </span>
+
+                    <span class="playerScore">
+                        ⭐ ${player.score}
+                    </span>
+
+                `;
+
+
+                list.appendChild(row);
+
+            }
+        );
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+
+        list.innerHTML = `
+
+            <p>
+                ❌ Tidak dapat terhubung
+                ke Google Sheets.
+            </p>
+
+        `;
+
+    });
+
+}
+
+
+// ==========================================
+// KEAMANAN TEXT
+// ==========================================
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+}
+
+
+// ==========================================
+// MENU
+// ==========================================
 
 document
     .getElementById("againButton")
     .addEventListener(
         "click",
-        function() {
+        startGame
+    );
 
-            startGame();
+
+document
+    .getElementById("homeButton")
+    .addEventListener(
+        "click",
+        goHome
+    );
+
+
+document
+    .getElementById("howButton")
+    .addEventListener(
+        "click",
+        () => {
+
+            menuScreen.classList.add(
+                "hidden"
+            );
+
+            howScreen.classList.remove(
+                "hidden"
+            );
 
         }
     );
 
 
-// ================= HOME =================
+document
+    .getElementById("backButton")
+    .addEventListener(
+        "click",
+        goHome
+    );
+
 
 document
-    .getElementById("homeButton")
+    .getElementById("leaderboardBack")
     .addEventListener(
         "click",
         goHome
@@ -935,6 +1155,10 @@ function goHome() {
         "hidden"
     );
 
+    leaderboardScreen.classList.add(
+        "hidden"
+    );
+
     menuScreen.classList.remove(
         "hidden"
     );
@@ -942,53 +1166,27 @@ function goHome() {
 }
 
 
-// ================= HOW TO PLAY =================
-
-document
-    .getElementById("howButton")
-    .addEventListener(
-        "click",
-        function() {
-
-            menuScreen.classList.add(
-                "hidden"
-            );
-
-            howScreen.classList.remove(
-                "hidden"
-            );
-
-        }
-    );
-
-
-document
-    .getElementById("backButton")
-    .addEventListener(
-        "click",
-        goHome
-    );
-
-
-// ================= QUIT =================
+// ==========================================
+// KELUAR
+// ==========================================
 
 document
     .getElementById("quitButton")
     .addEventListener(
         "click",
-        function() {
+        () => {
 
-            const confirmQuit =
+            if (
                 confirm(
                     "Yakin ingin keluar?"
+                )
+            ) {
+
+                finishGame(
+                    "Pemain keluar dari game"
                 );
-
-
-            if (confirmQuit) {
-
-                finishGame();
 
             }
 
         }
-    ); 
+    );
