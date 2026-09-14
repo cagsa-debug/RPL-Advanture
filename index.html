@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPL Adventure</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= MENU ================= -->
+
+<section id="menuScreen" class="screen">
+
+    <div class="card">
+
+        <div class="logo">💻</div>
+
+        <h1>RPL ADVENTURE</h1>
+
+        <p class="subtitle">
+            Petualangan Belajar Rekayasa Perangkat Lunak
+        </p>
+
+        <input
+            type="text"
+            id="username"
+            maxlength="20"
+            placeholder="Masukkan username"
+        >
+
+        <button id="startBtn">
+            🎮 MULAI GAME
+        </button>
+
+        <button id="leaderboardBtn" class="secondary">
+            🏆 LEADERBOARD
+        </button>
+
+        <button id="howBtn" class="secondary">
+            📚 CARA BERMAIN
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CARA BERMAIN ================= -->
+
+<section id="howScreen" class="screen hidden">
+
+    <div class="card">
+
+        <h2>📚 CARA BERMAIN</h2>
+
+        <div class="instructions">
+
+            <p>👨‍💻 Gerakkan karakter menggunakan WASD / tombol arah.</p>
+
+            <p>💻 Temukan semua item materi RPL.</p>
+
+            <p>❓ Setiap item akan memberikan pertanyaan.</p>
+
+            <p>✅ Jawaban benar = +10 poin.</p>
+
+            <p>❌ Jawaban salah = -5 poin dan kehilangan 1 nyawa.</p>
+
+            <p>❤️ Kamu memiliki 3 nyawa.</p>
+
+            <p>⏱️ Waktu permainan adalah 90 detik.</p>
+
+        </div>
+
+        <button id="backHowBtn">
+            ⬅️ KEMBALI
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ================= GAME ================= -->
+
+<section id="gameScreen" class="hidden">
+
+    <div class="hud">
+
+        <div>
+            👤 <span id="playerName">Player</span>
+        </div>
+
+        <div>
+            ⭐ <span id="score">0</span>
+        </div>
+
+        <div>
+            ❤️ <span id="lives">3</span>
+        </div>
+
+        <div>
+            ⏱️ <span id="timer">90</span>
+        </div>
+
+    </div>
+
+
+    <div id="gameArea">
+
+        <div class="gameTitle">
+            🎯 TEMUKAN SEMUA MATERI RPL
+        </div>
+
+
+        <!-- PLAYER -->
+
+        <div id="player">
+            👨‍💻
+        </div>
+
+
+        <!-- ITEMS -->
+
+        <button
+            class="item html"
+            data-type="html"
+            title="HTML"
+        >
+            🌐
+            <span>HTML</span>
+        </button>
+
+
+        <button
+            class="item css"
+            data-type="css"
+            title="CSS"
+        >
+            🎨
+            <span>CSS</span>
+        </button>
+
+
+        <button
+            class="item javascript"
+            data-type="javascript"
+            title="JavaScript"
+        >
+            ⚡
+            <span>JS</span>
+        </button>
+
+
+        <button
+            class="item python"
+            data-type="python"
+            title="Python"
+        >
+            🐍
+            <span>PY</span>
+        </button>
+
+
+        <button
+            class="item database"
+            data-type="database"
+            title="Database"
+        >
+            🗄️
+            <span>DB</span>
+        </button>
+
+
+        <button
+            class="item git"
+            data-type="git"
+            title="Git"
+        >
+            🔀
+            <span>GIT</span>
+        </button>
+
+    </div>
+
+
+    <!-- CONTROLLER HP -->
+
+    <div class="mobileControls">
+
+        <div></div>
+
+        <button data-key="ArrowUp">⬆️</button>
+
+        <div></div>
+
+        <button data-key="ArrowLeft">⬅️</button>
+
+        <button data-key="ArrowDown">⬇️</button>
+
+        <button data-key="ArrowRight">➡️</button>
+
+    </div>
+
+
+    <button id="quitBtn" class="quit">
+        ❌
+    </button>
+
+</section>
+
+
+<!-- ================= QUIZ ================= -->
+
+div id="quizModal" class="modal hidden">
+
+    <div class="quizBox">
+
+        <div id="quizIcon" class="quizIcon">
+            💻
+        </div>
+
+        <h2 id="quizTitle">
+            Quiz RPL
+        </h2>
+
+        <p id="question">
+            Pertanyaan
+        </p>
+
+        <div id="answers"></div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= GAME OVER ================= -->
+
+<section id="gameOverScreen" class="screen hidden">
+
+    <div class="card">
+
+        <div class="logo">
+            🏆
+        </div>
+
+        <h1>GAME SELESAI</h1>
+
+        <p id="finalMessage">
+            Permainan selesai.
+        </p>
+
+        <div class="finalScore">
+            ⭐ <span id="finalScore">0</span>
+        </div>
+
+        <button id="playAgainBtn">
+            🔄 MAIN LAGI
+        </button>
+
+        <button id="homeBtn" class="secondary">
+            🏠 MENU UTAMA
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ================= LEADERBOARD ================= -->
+
+<section id="leaderboardScreen" class="screen hidden">
+
+    <div class="card leaderboardCard">
+
+        <h1>🏆 LEADERBOARD</h1>
+
+        <p class="subtitle">
+            10 pemain dengan skor tertinggi
+        </p>
+
+        <div id="leaderboardList">
+
+            <div class="loading">
+                Memuat leaderboard...
+            </div>
+
+        </div>
+
+        <button id="backLeaderboardBtn">
+            ⬅️ KEMBALI
+        </button>
+
+    </div>
+
+</section>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
