@@ -9,7 +9,7 @@
 // ==========================================
 
 const SCRIPT_URL =
-    "MASUKKAN_URL_APPS_SCRIPT";
+    "https://script.google.com/macros/s/AKfycbzjMBjCm1-70HeeXXTt_M_oHmdHhx7_lQRnw14ZfvCQxkR__LZJDqSnwlBqRINUvopu0g/exec";
 
 
 // ==========================================
