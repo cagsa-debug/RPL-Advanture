@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +12,7 @@
 
 <body>
 
-    <!-- ================= MENU ================= -->
-
+    <!-- MENU -->
     <div id="menuScreen" class="screen">
 
         <div class="card">
@@ -26,14 +26,18 @@
             </p>
 
             <input
-                id="username"
                 type="text"
+                id="username"
                 placeholder="Masukkan username"
                 maxlength="20"
             >
 
             <button id="startButton">
                 🎮 MULAI GAME
+            </button>
+
+            <button id="leaderboardButton" class="darkButton">
+                🏆 LEADERBOARD
             </button>
 
             <button id="howButton" class="darkButton">
@@ -45,8 +49,7 @@
     </div>
 
 
-    <!-- ================= CARA BERMAIN ================= -->
-
+    <!-- CARA BERMAIN -->
     <div id="howScreen" class="screen hidden">
 
         <div class="card">
@@ -55,17 +58,17 @@
 
             <div class="rules">
 
-                <p>👨‍💻 Gerakkan karakter dengan WASD atau tombol arah.</p>
+                <p>👨‍💻 Gerakkan karakter menggunakan WASD / tombol arah.</p>
 
-                <p>💻 Cari semua item materi RPL.</p>
+                <p>💻 Cari semua materi RPL.</p>
 
-                <p>❓ Setiap item akan memberikan soal.</p>
+                <p>❓ Jawab pertanyaan setiap menemukan materi.</p>
 
-                <p>✅ Jawaban benar mendapatkan 10 poin.</p>
+                <p>✅ Jawaban benar +10 poin.</p>
 
-                <p>❌ Jawaban salah mengurangi 5 poin.</p>
+                <p>❌ Jawaban salah -5 poin.</p>
 
-                <p>❤️ Kamu memiliki 3 nyawa.</p>
+                <p>❤️ Memiliki 3 nyawa.</p>
 
                 <p>⏱️ Waktu permainan 90 detik.</p>
 
@@ -80,11 +83,34 @@
     </div>
 
 
-    <!-- ================= GAME ================= -->
+    <!-- LEADERBOARD -->
+    <div id="leaderboardScreen" class="screen hidden">
 
+        <div class="card leaderboardCard">
+
+            <h1>🏆 LEADERBOARD</h1>
+
+            <p>Top 10 pemain terbaik</p>
+
+            <div id="leaderboardList">
+                <p>Memuat data...</p>
+            </div>
+
+            <button id="refreshLeaderboard">
+                🔄 REFRESH
+            </button>
+
+            <button id="leaderboardBack" class="darkButton">
+                ⬅️ KEMBALI
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- GAME -->
     <div id="gameScreen" class="hidden">
-
-        <!-- HUD -->
 
         <div class="hud">
 
@@ -107,8 +133,6 @@
         </div>
 
 
-        <!-- AREA GAME -->
-
         <div id="gameArea">
 
             <div class="gameMessage">
@@ -116,82 +140,48 @@
             </div>
 
 
-            <!-- PLAYER -->
-
             <div id="player">
                 👨‍💻
             </div>
 
 
-            <!-- ITEM HTML -->
-
-            <div
-                class="item html"
-                data-type="html"
-            >
+            <div class="item html" data-type="html">
                 🌐
                 <small>HTML</small>
             </div>
 
 
-            <!-- ITEM CSS -->
-
-            <div
-                class="item css"
-                data-type="css"
-            >
+            <div class="item css" data-type="css">
                 🎨
                 <small>CSS</small>
             </div>
 
 
-            <!-- ITEM JAVASCRIPT -->
-
-            <div
-                class="item javascript"
-                data-type="javascript"
-            >
+            <div class="item javascript" data-type="javascript">
                 ⚡
                 <small>JS</small>
             </div>
 
 
-            <!-- ITEM PYTHON -->
-
-            <div
-                class="item python"
-                data-type="python"
-            >
+            <div class="item python" data-type="python">
                 🐍
                 <small>PYTHON</small>
             </div>
 
 
-            <!-- ITEM DATABASE -->
-
-            <div
-                class="item database"
-                data-type="database"
-            >
+            <div class="item database" data-type="database">
                 🗄️
                 <small>DATABASE</small>
             </div>
 
 
-            <!-- ITEM GIT -->
-
-            <div
-                class="item git"
-                data-type="git"
-            >
+            <div class="item git" data-type="git">
                 🔀
                 <small>GIT</small>
             </div>
 
         </div>
 
-
-        <!-- KONTROL HP -->
 
         <div class="controls">
 
@@ -225,8 +215,7 @@
     </div>
 
 
-    <!-- ================= QUIZ ================= -->
-
+    <!-- QUIZ -->
     <div id="quizModal" class="modal hidden">
 
         <div class="quizCard">
@@ -250,8 +239,7 @@
     </div>
 
 
-    <!-- ================= GAME OVER ================= -->
-
+    <!-- GAME OVER -->
     <div id="gameOverScreen" class="screen hidden">
 
         <div class="card">
@@ -260,7 +248,9 @@
                 🏆
             </div>
 
-            <h1>GAME SELESAI</h1>
+            <h1>
+                GAME SELESAI
+            </h1>
 
             <p id="resultText"></p>
 
@@ -270,6 +260,10 @@
 
             <button id="againButton">
                 🔄 MAIN LAGI
+            </button>
+
+            <button id="resultLeaderboard" class="darkButton">
+                🏆 LEADERBOARD
             </button>
 
             <button id="homeButton" class="darkButton">
@@ -284,4 +278,5 @@
     <script src="script.js"></script>
 
 </body>
+
 </html>
